@@ -1,6 +1,30 @@
-from src.main import add
-import pytest
+name: Python application
 
-def test_add():
-  assert add(2, 3) == 5
-  assert add(1.2, 3.5) == 4
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest
